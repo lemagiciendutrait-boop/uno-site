@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commander - Uno Personnalisé</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">UNO <span>Personnalisé</span></div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="checkout.html">Commander</a>
+      <a class="cart-icon" onclick="toggleCart()">
+        🛒 <span class="badge" id="cart-count">0</span>
+      </a>
+    </nav>
+  </header>
+
+  <div class="checkout-page" id="checkout-page">
+    <h1>Finaliser la commande</h1>
+    <div class="order-summary" id="order-summary">
+      <h3>Récapitulatif de la commande</h3>
+      <div id="order-items"></div>
+      <div class="order-total">
+        <span>Total</span>
+        <span id="checkout-total">0 FCFA</span>
+      </div>
+    </div>
+    <form id="checkout-form" onsubmit="submitOrder(event)">
+      <div class="form-group">
+        <label for="name">Nom complet</label>
+        <input type="text" id="name" required placeholder="Votre nom">
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" required placeholder="votre@email.com">
+      </div>
+      <div class="form-group">
+        <label for="phone">Téléphone</label>
+        <input type="tel" id="phone" required placeholder="+221 77 000 00 00">
+      </div>
+      <div class="form-group">
+        <label for="address">Adresse de livraison</label>
+        <textarea id="address" required placeholder="Votre adresse complète"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Mode de paiement</label>
+        <div class="payment-methods">
+          <label class="payment-option" onclick="selectPayment('wave')">
+            <input type="radio" name="payment" value="wave" checked>
+            <div class="payment-option-content">
+              <div class="payment-logo wave-logo-sm">WAVE</div>
+              <span>Wave</span>
+            </div>
+          </label>
+          <label class="payment-option" onclick="selectPayment('orange')">
+            <input type="radio" name="payment" value="orange">
+            <div class="payment-option-content">
+              <div class="payment-logo orange-logo-sm">ORANGE</div>
+              <span>Orange Money</span>
+            </div>
+          </label>
+          <label class="payment-option" onclick="selectPayment('delivery')">
+            <input type="radio" name="payment" value="delivery">
+            <div class="payment-option-content">
+              <div class="payment-logo cash-logo-sm">💵</div>
+              <span>À la livraison</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit">Passer la commande</button>
+    </form>
+
+    <div id="payment-info" style="display:none">
+      <div id="payment-box-wave" class="payment-box">
+        <h3>💳 Paiement par Wave</h3>
+        <div class="payment-details">
+          <p>Envoyez <strong id="payment-total"></strong> au numéro Wave ci-dessous :</p>
+          <div class="phone-card">
+            <div class="phone-logo wave-logo-card">WAVE</div>
+            <div class="phone-number">📞 <strong>+221 78 100 00 00</strong></div>
+            <button class="btn-copy" onclick="copyNumber('+221781000000')">📋 Copier le numéro</button>
+          </div>
+          <p class="payment-note">Après le paiement, cliquez sur le bouton WhatsApp ci-dessous pour confirmer votre commande.</p>
+        </div>
+      </div>
+
+      <div id="payment-box-orange" class="payment-box" style="display:none">
+        <h3>💳 Paiement par Orange Money</h3>
+        <div class="payment-details">
+          <p>Envoyez <strong id="payment-total-orange"></strong> au numéro Orange Money ci-dessous :</p>
+          <div class="phone-card">
+            <div class="phone-logo orange-logo-card">ORANGE</div>
+            <div class="phone-number">📞 <strong>+221 77 100 00 00</strong></div>
+            <button class="btn-copy" onclick="copyNumber('+221771000000')">📋 Copier le numéro</button>
+          </div>
+          <p class="payment-note">Après le paiement, cliquez sur le bouton WhatsApp ci-dessous pour confirmer votre commande.</p>
+        </div>
+      </div>
+
+      <div id="payment-box-delivery" class="payment-box" style="display:none">
+        <h3>📦 Paiement à la livraison</h3>
+        <div class="payment-details">
+          <p>Vous paierez <strong id="payment-total-delivery"></strong> à la réception de votre commande.</p>
+          <div class="delivery-info">
+            <div class="delivery-icon">🚚</div>
+            <p>Montant à payer : <strong id="payment-total-delivery2" style="color:#ed1c24;font-size:1.3rem"></strong></p>
+            <p>Mode de paiement accepté : Wave, Orange Money ou espèces</p>
+          </div>
+          <p class="payment-note">Cliquez sur le bouton WhatsApp ci-dessous pour confirmer votre commande.</p>
+        </div>
+      </div>
+
+      <div class="payment-summary">
+        <p><strong>Commande :</strong> <span id="payment-order-details"></span></p>
+        <p><strong>Nom :</strong> <span id="payment-name"></span></p>
+        <p><strong>Total :</strong> <span id="payment-total-summary" style="color:#ed1c24;font-size:1.3rem"></span></p>
+      </div>
+      <button id="btn-whatsapp" class="btn-whatsapp">
+        ✅ Confirmer la commande sur WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+  <div class="cart-sidebar" id="cart-sidebar">
+    <div class="cart-header">
+      <h2>Votre Panier</h2>
+      <button class="close-cart" onclick="toggleCart()">&times;</button>
+    </div>
+    <div class="cart-items" id="cart-items">
+      <div class="empty-cart">Votre panier est vide</div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Total</span>
+        <span id="cart-total">0 FCFA</span>
+      </div>
+      <button class="btn-checkout" onclick="goToCheckout()">Commander</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <footer>
+    <p>&copy; 2026 Uno Personnalisé - Tous droits réservés</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

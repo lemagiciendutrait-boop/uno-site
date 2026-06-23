@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deck - Uno Personnalisé</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">UNO <span>Personnalisé</span></div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="checkout.html">Commander</a>
+      <a class="cart-icon" onclick="toggleCart()">
+        🛒 <span class="badge" id="cart-count">0</span>
+      </a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <a href="index.html" class="back-link">&larr; Retour aux decks</a>
+    <div class="deck-page" id="deck-page">
+    </div>
+  </div>
+
+  <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+  <div class="cart-sidebar" id="cart-sidebar">
+    <div class="cart-header">
+      <h2>Votre Panier</h2>
+      <button class="close-cart" onclick="toggleCart()">&times;</button>
+    </div>
+    <div class="cart-items" id="cart-items">
+      <div class="empty-cart">Votre panier est vide</div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Total</span>
+        <span id="cart-total">0 FCFA</span>
+      </div>
+      <button class="btn-checkout" onclick="goToCheckout()">Commander</button>
+    </div>
+  </div>
+
+  <div class="modal" id="card-modal" onclick="closeModal()">
+    <button class="close-modal">&times;</button>
+    <img id="modal-image" src="" alt="Carte agrandie">
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <footer>
+    <p>&copy; 2026 Uno Personnalisé - Tous droits réservés</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

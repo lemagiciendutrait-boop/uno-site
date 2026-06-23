@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Uno Personnalisé</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">UNO <span>Admin</span></div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="admin.html" style="opacity:0.8">Admin</a>
+    </nav>
+  </header>
+
+  <div class="admin-page" id="admin-login">
+    <div class="admin-card">
+      <h2>🔐 Connexion Admin</h2>
+      <div class="form-group">
+        <input type="password" id="admin-password" placeholder="Mot de passe" onkeydown="if(event.key==='Enter') adminLogin()">
+      </div>
+      <button class="btn-submit" onclick="adminLogin()">Se connecter</button>
+      <p id="admin-error" style="color:#ed1c24;margin-top:0.5rem;display:none">Mot de passe incorrect</p>
+    </div>
+  </div>
+
+  <div class="admin-page" id="admin-dashboard" style="display:none">
+    <div class="admin-header">
+      <h1>📊 Tableau de bord</h1>
+      <button class="btn-logout" onclick="adminLogout()">Déconnexion</button>
+    </div>
+
+    <div class="admin-grid">
+      <div class="admin-card">
+        <h3>💡 Suggestions de decks</h3>
+        <div id="suggestions-list">
+          <p style="color:#999">Chargement...</p>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3>🃏 Produits</h3>
+        <div id="products-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PASSWORD_KEY = 'admin_token';
+
+    async function adminLogin() {
+      const pwd = document.getElementById('admin-password').value;
+      const res = await fetch('/api/admin/suggestions?password=' + encodeURIComponent(pwd));
+      if (!res.ok) {
+        document.getElementById('admin-error').style.display = 'block';
+        return;
+      }
+      sessionStorage.setItem(PASSWORD_KEY, pwd);
+      document.getElementById('admin-login').style.display = 'none';
+      document.getElementById('admin-dashboard').style.display = 'block';
+      loadAdminData();
+    }
+
+    function adminLogout() {
+      sessionStorage.removeItem(PASSWORD_KEY);
+      document.getElementById('admin-login').style.display = 'block';
+      document.getElementById('admin-dashboard').style.display = 'none';
+    }
+
+    async function loadAdminData() {
+      const pwd = sessionStorage.getItem(PASSWORD_KEY);
+      if (!pwd) return;
+
+      // Load suggestions
+      const res = await fetch('/api/admin/suggestions?password=' + encodeURIComponent(pwd));
+      if (!res.ok) { adminLogout(); return; }
+      const suggestions = await res.json();
+
+      const list = document.getElementById('suggestions-list');
+      if (suggestions.length === 0) {
+        list.innerHTML = '<p style="color:#999">Aucune suggestion pour le moment.</p>';
+      } else {
+        list.innerHTML = suggestions.map(s => `
+          <div class="suggestion-item">
+            <div class="suggestion-header">
+              <strong>${s.theme}</strong>
+              <span class="suggestion-date">${new Date(s.date).toLocaleDateString('fr-FR')}</span>
+            </div>
+            <div class="suggestion-details">
+              ${s.characters ? '<p><strong>Personnages :</strong> ' + s.characters + '</p>' : ''}
+              ${s.reason ? '<p><strong>Pourquoi :</strong> ' + s.reason + '</p>' : ''}
+              <p><strong>Proposé par :</strong> ${s.name}</p>
+            </div>
+            <button class="btn-delete" onclick="deleteSuggestion('${s.id}')">🗑 Supprimer</button>
+          </div>
+        `).join('');
+      }
+
+      // Load products
+      const prodRes = await fetch('products.json');
+      const products = await prodRes.json();
+      const prodList = document.getElementById('products-list');
+      prodList.innerHTML = products.filter(p => !p.isCustom).map(p => `
+        <div class="product-admin-item">
+          <span><strong>${p.name}</strong> — ${p.price.toLocaleString('fr-FR')} FCFA</span>
+          <span class="product-admin-stats">${p.cardCount} cartes</span>
+        </div>
+      `).join('');
+    }
+
+    async function deleteSuggestion(id) {
+      if (!confirm('Supprimer cette suggestion ?')) return;
+      const pwd = sessionStorage.getItem(PASSWORD_KEY);
+      const res = await fetch('/api/admin/suggestions/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, password: pwd })
+      });
+      if (res.ok) loadAdminData();
+    }
+
+    // Auto-login if password in session
+    document.addEventListener('DOMContentLoaded', () => {
+      if (sessionStorage.getItem(PASSWORD_KEY)) {
+        adminLogin();
+      }
+    });
+  </script>
+
+  <style>
+    .admin-page {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    .admin-header h1 {
+      font-size: 1.8rem;
+    }
+    .btn-logout {
+      background: #666;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-logout:hover {
+      background: #888;
+    }
+    .admin-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin-bottom: 1.5rem;
+    }
+    .admin-card h2 {
+      margin-bottom: 1rem;
+    }
+    .admin-card h3 {
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #eee;
+    }
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    #admin-login .admin-card {
+      max-width: 400px;
+      margin: 4rem auto;
+      text-align: center;
+    }
+    #admin-login input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-bottom: 1rem;
+    }
+    .suggestion-item {
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .suggestion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .suggestion-header strong {
+      font-size: 1.1rem;
+      color: #1a1a2e;
+    }
+    .suggestion-date {
+      color: #999;
+      font-size: 0.85rem;
+    }
+    .suggestion-details {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    .suggestion-details p {
+      margin-bottom: 0.3rem;
+    }
+    .btn-delete {
+      background: #fee2e2;
+      color: #dc2626;
+      border: none;
+      padding: 0.4rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn-delete:hover {
+      background: #fecaca;
+    }
+    .product-admin-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .product-admin-stats {
+      color: #999;
+      font-size: 0.85rem;
+    }
+  </style>
+</body>
+</html>

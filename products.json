@@ -1,0 +1,84 @@
+[
+  {
+    "id": "custom",
+    "name": "Deck Personnalisé",
+    "path": "",
+    "cardCount": 0,
+    "hasCover": false,
+    "price": 0,
+    "description": "Créez votre propre deck UNO unique ! Choisissez vos thèmes, personnages, photos... Tout est possible.",
+    "isCustom": true
+  },
+  {
+    "id": "black-clover",
+    "name": "Black Clover",
+    "path": "Black Clover",
+    "cardCount": 69,
+    "hasCover": true,
+    "price": 10000,
+    "description": "Deck UNO personnalisé Black Clover avec 69 cartes aux couleurs de l'anime."
+  },
+  {
+    "id": "demon-slayer",
+    "name": "Demon Slayer",
+    "path": "Demon Slayer",
+    "cardCount": 69,
+    "hasCover": true,
+    "price": 10000,
+    "description": "Deck UNO personnalisé Demon Slayer avec 69 cartes aux couleurs de l'anime."
+  },
+  {
+    "id": "dragon-ball",
+    "name": "Dragon Ball",
+    "path": "Dragon Ball",
+    "cardCount": 69,
+    "hasCover": true,
+    "price": 10000,
+    "description": "Deck UNO personnalisé Dragon Ball avec 69 cartes aux couleurs de l'anime."
+  },
+  {
+    "id": "fairy-tail",
+    "name": "Fairy Tail",
+    "path": "Fairy Tail",
+    "cardCount": 69,
+    "hasCover": true,
+    "price": 10000,
+    "description": "Deck UNO personnalisé Fairy Tail avec 69 cartes aux couleurs de l'anime."
+  },
+  {
+    "id": "jujutsu-kaisen",
+    "name": "Jujutsu Kaisen",
+    "path": "Jujutsu Kaisen",
+    "cardCount": 69,
+    "hasCover": true,
+    "price": 10000,
+    "description": "Deck UNO personnalisé Jujutsu Kaisen avec 69 cartes aux couleurs de l'anime."
+  },
+  {
+    "id": "one-piece",
+    "name": "One Piece",
+    "path": "One piece",
+    "cardCount": 69,
+    "hasCover": true,
+    "price": 10000,
+    "description": "Deck UNO personnalisé One Piece avec 69 cartes aux couleurs de l'anime."
+  },
+  {
+    "id": "pokemon",
+    "name": "Pokémon",
+    "path": "Pokemon",
+    "cardCount": 65,
+    "hasCover": false,
+    "price": 8500,
+    "description": "Deck UNO personnalisé Pokémon avec 65 cartes aux couleurs de l'univers Pokémon."
+  },
+  {
+    "id": "senegal",
+    "name": "Sénégal",
+    "path": "Senegal",
+    "cardCount": 69,
+    "hasCover": false,
+    "price": 10000,
+    "description": "Deck UNO personnalisé Sénégal avec 69 cartes aux couleurs du drapeau."
+  }
+]
