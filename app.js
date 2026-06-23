@@ -325,7 +325,6 @@ function submitOrder(e) {
   }
 
   const name = document.getElementById('name').value;
-  const email = document.getElementById('email').value;
   const phone = document.getElementById('phone').value;
   const address = document.getElementById('address').value;
   const total = getCartTotal();
@@ -363,7 +362,6 @@ function submitOrder(e) {
     const message = encodeURIComponent(
       '🃏 *Nouvelle commande UNO Personnalisé* 🃏\n\n' +
       '👤 *Nom:* ' + name + '\n' +
-      '📧 *Email:* ' + email + '\n' +
       '📞 *Téléphone:* ' + phone + '\n' +
       '📍 *Adresse:* ' + address + '\n\n' +
       '📦 *Détails de la commande:*\n' + orderDetails + '\n\n' +
