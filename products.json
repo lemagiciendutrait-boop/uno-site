@@ -68,7 +68,7 @@
     "name": "Pokémon",
     "path": "Pokemon",
     "cardCount": 65,
-    "hasCover": false,
+    "hasCover": true,
     "price": 8500,
     "description": "Deck UNO personnalisé Pokémon avec 65 cartes aux couleurs de l'univers Pokémon."
   },
@@ -77,7 +77,7 @@
     "name": "Sénégal",
     "path": "Senegal",
     "cardCount": 69,
-    "hasCover": false,
+    "hasCover": true,
     "price": 10000,
     "description": "Deck UNO personnalisé Sénégal avec 69 cartes aux couleurs du drapeau."
   }
