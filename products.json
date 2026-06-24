@@ -69,7 +69,7 @@
     "path": "Pokemon",
     "cardCount": 65,
     "hasCover": true,
-    "price": 8500,
+    "price": 10000,
     "description": "Deck UNO personnalisé Pokémon avec 65 cartes aux couleurs de l'univers Pokémon."
   },
   {
@@ -80,5 +80,14 @@
     "hasCover": true,
     "price": 10000,
     "description": "Deck UNO personnalisé Sénégal avec 69 cartes aux couleurs du drapeau."
+  },
+  {
+    "id": "naruto",
+    "name": "Naruto",
+    "path": "Naruto",
+    "cardCount": 69,
+    "hasCover": true,
+    "price": 10000,
+    "description": "Deck UNO personnalisé Naruto avec 69 cartes aux couleurs de l'univers Naruto."
   }
 ]
