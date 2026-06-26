@@ -23,7 +23,15 @@
     <div class="order-summary" id="order-summary">
       <h3>Récapitulatif de la commande</h3>
       <div id="order-items"></div>
+      <div class="order-total" style="border-top:none;margin-top:0;padding-top:0">
+        <span>Sous-total</span>
+        <span id="checkout-subtotal">0 FCFA</span>
+      </div>
       <div class="order-total">
+        <span>Livraison</span>
+        <span id="checkout-shipping">2 000 FCFA</span>
+      </div>
+      <div class="order-total" style="font-size:1.3rem;border-top:2px solid #ed1c24;color:#ed1c24">
         <span>Total</span>
         <span id="checkout-total">0 FCFA</span>
       </div>
@@ -115,6 +123,7 @@
       <div class="payment-summary">
         <p><strong>Commande :</strong> <span id="payment-order-details"></span></p>
         <p><strong>Nom :</strong> <span id="payment-name"></span></p>
+        <p><strong>Livraison :</strong> <span id="payment-shipping"></span></p>
         <p><strong>Total :</strong> <span id="payment-total-summary" style="color:#ed1c24;font-size:1.3rem"></span></p>
       </div>
       <button id="btn-whatsapp" class="btn-whatsapp">
@@ -144,6 +153,10 @@
   <div class="toast" id="toast"></div>
 
   <footer>
+    <div class="footer-links">
+      <a href="cgv.html">CGV</a>
+      <a href="livraison.html">Livraison & Retours</a>
+    </div>
     <p>&copy; 2026 Uno Personnalisé - Tous droits réservés</p>
   </footer>
 

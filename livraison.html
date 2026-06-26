@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Livraison & Retours - Uno Personnalisé</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">UNO <span>Personnalisé</span></div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="checkout.html">Commander</a>
+      <a class="cart-icon" onclick="toggleCart()">
+        🛒 <span class="badge" id="cart-count">0</span>
+      </a>
+    </nav>
+  </header>
+
+  <div class="legal-page">
+    <a href="index.html" class="back-link">&larr; Retour à l'accueil</a>
+    <h1>Politique de Livraison & Retours</h1>
+
+    <h2>Livraison</h2>
+    <h3>Délais</h3>
+    <p>Les commandes sont traitées sous 24h et livrées sous <strong>5 à 10 jours ouvrés</strong> après confirmation du paiement.</p>
+
+    <h3>Zone de livraison</h3>
+    <p>Nous livrons actuellement dans tout le <strong>Sénégal</strong>. Pour les livraisons internationales, contactez-nous sur WhatsApp.</p>
+
+    <h3>Frais de livraison</h3>
+    <p>Les frais de livraison sont de <strong>2 000 FCFA</strong> pour toute commande au Sénégal. Ce montant s'ajoute au total de votre commande.</p>
+
+    <h3>Suivi</h3>
+    <p>Un numéro de suivi vous sera communiqué par WhatsApp dès l'expédition de votre colis.</p>
+
+    <h2>Retours & Remboursements</h2>
+
+    <h3>Produits défectueux</h3>
+    <p>Si vous recevez un produit défectueux ou endommagé, contactez-nous dans les <strong>48h</strong> suivant la réception via WhatsApp avec une photo du défaut. Nous vous renverrons un deck neuf sans frais.</p>
+
+    <h3>Produits personnalisés</h3>
+    <p>Les decks personnalisés (sur mesure) ne peuvent pas être repris ou échangés, sauf défaut de fabrication avéré.</p>
+
+    <h3>Droit de rétractation</h3>
+    <p>Vous disposez de <strong>7 jours</strong> après réception pour retourner un deck standard (non personnalisé) dans son emballage d'origine. Les frais de retour sont à votre charge. Le remboursement sera effectué sous 72h après réception du colis retourné.</p>
+
+    <h2>Contact</h2>
+    <p>Pour toute question concernant votre livraison, contactez-nous sur WhatsApp.</p>
+  </div>
+
+  <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+  <div class="cart-sidebar" id="cart-sidebar">
+    <div class="cart-header">
+      <h2>Votre Panier</h2>
+      <button class="close-cart" onclick="toggleCart()">&times;</button>
+    </div>
+    <div class="cart-items" id="cart-items">
+      <div class="empty-cart">Votre panier est vide</div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Total</span>
+        <span id="cart-total">0 FCFA</span>
+      </div>
+      <button class="btn-checkout" onclick="goToCheckout()">Commander</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="cgv.html">CGV</a>
+      <a href="livraison.html">Livraison & Retours</a>
+    </div>
+    <p>&copy; 2026 Uno Personnalisé - Tous droits réservés</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

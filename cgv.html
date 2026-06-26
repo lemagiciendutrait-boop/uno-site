@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGV - Uno Personnalisé</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="logo">UNO <span>Personnalisé</span></div>
+    <nav>
+      <a href="index.html">Accueil</a>
+      <a href="checkout.html">Commander</a>
+      <a class="cart-icon" onclick="toggleCart()">
+        🛒 <span class="badge" id="cart-count">0</span>
+      </a>
+    </nav>
+  </header>
+
+  <div class="legal-page">
+    <a href="index.html" class="back-link">&larr; Retour à l'accueil</a>
+    <h1>Conditions Générales de Vente</h1>
+
+    <h2>1. Présentation</h2>
+    <p>Uno Personnalisé propose des decks de cartes UNO personnalisés avec des thèmes anime, manga et autres univers.</p>
+
+    <h2>2. Prix</h2>
+    <p>Tous nos prix sont indiqués en FCFA (Franc CFA), toutes taxes comprises. Les frais de livraison sont indiqués séparément et sont à la charge du client.</p>
+
+    <h2>3. Commande</h2>
+    <p>La commande est confirmée après réception du paiement et validation sur WhatsApp. Un accusé de réception vous sera envoyé sous 24h.</p>
+
+    <h2>4. Paiement</h2>
+    <p>Les paiements s'effectuent par :</p>
+    <ul>
+      <li><strong>Wave</strong> — Transfert mobile au numéro indiqué sur la page de commande</li>
+      <li><strong>Orange Money</strong> — Transfert mobile au numéro indiqué sur la page de commande</li>
+      <li><strong>Paiement à la livraison</strong> — Espèces, Wave ou Orange Money acceptés</li>
+    </ul>
+
+    <h2>5. Livraison</h2>
+    <p>La livraison est effectuée dans un délai de 5 à 10 jours ouvrés après confirmation de la commande. Les frais de livraison sont calculés au moment de la commande.</p>
+
+    <h2>6. Droit de rétractation</h2>
+    <p>Conformément à la réglementation en vigueur, vous disposez d'un délai de 7 jours à compter de la réception pour exercer votre droit de rétractation, sauf pour les produits personnalisés (cartes sur mesure) qui ne peuvent être repris.</p>
+
+    <h2>7. Service client</h2>
+    <p>Pour toute question, contactez-nous sur WhatsApp au numéro indiqué sur le site ou via le formulaire de suggestion.</p>
+  </div>
+
+  <div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+  <div class="cart-sidebar" id="cart-sidebar">
+    <div class="cart-header">
+      <h2>Votre Panier</h2>
+      <button class="close-cart" onclick="toggleCart()">&times;</button>
+    </div>
+    <div class="cart-items" id="cart-items">
+      <div class="empty-cart">Votre panier est vide</div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total">
+        <span>Total</span>
+        <span id="cart-total">0 FCFA</span>
+      </div>
+      <button class="btn-checkout" onclick="goToCheckout()">Commander</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="cgv.html">CGV</a>
+      <a href="livraison.html">Livraison & Retours</a>
+    </div>
+    <p>&copy; 2026 Uno Personnalisé - Tous droits réservés</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

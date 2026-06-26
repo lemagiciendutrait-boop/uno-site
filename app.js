@@ -1,5 +1,6 @@
 let products = [];
 let cart = JSON.parse(localStorage.getItem('unoCart') || '[]');
+const SHIPPING_FEE = 2000;
 
 function imagePath(deckPath, filename) {
   return 'image deck/' + deckPath + '/' + filename;
@@ -294,11 +295,15 @@ document.addEventListener('keydown', e => {
 // --- Checkout page ---
 function loadCheckout() {
   const itemsEl = document.getElementById('order-items');
+  const subtotalEl = document.getElementById('checkout-subtotal');
+  const shippingEl = document.getElementById('checkout-shipping');
   const totalEl = document.getElementById('checkout-total');
   if (!itemsEl) return;
 
   if (cart.length === 0) {
     itemsEl.innerHTML = '<p style="color:#999">Votre panier est vide.</p>';
+    if (subtotalEl) subtotalEl.textContent = '0 FCFA';
+    if (shippingEl) shippingEl.textContent = '0 FCFA';
     if (totalEl) totalEl.textContent = '0 FCFA';
     return;
   }
@@ -314,7 +319,10 @@ function loadCheckout() {
     `;
   }).join('');
 
-  if (totalEl) totalEl.textContent = formatPrice(getCartTotal());
+  const subtotal = getCartTotal();
+  if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
+  if (shippingEl) shippingEl.textContent = formatPrice(SHIPPING_FEE);
+  if (totalEl) totalEl.textContent = formatPrice(subtotal + SHIPPING_FEE);
 }
 
 function submitOrder(e) {
@@ -327,7 +335,10 @@ function submitOrder(e) {
   const name = document.getElementById('name').value;
   const phone = document.getElementById('phone').value;
   const address = document.getElementById('address').value;
-  const total = getCartTotal();
+  const subtotal = getCartTotal();
+  const total = subtotal + SHIPPING_FEE;
+  const subtotalFormatted = formatPrice(subtotal);
+  const shippingFormatted = formatPrice(SHIPPING_FEE);
   const totalFormatted = formatPrice(total);
 
   const orderDetails = cart.map(item => {
@@ -346,6 +357,7 @@ function submitOrder(e) {
   document.getElementById('payment-total-delivery').textContent = totalFormatted;
   document.getElementById('payment-total-delivery2').textContent = totalFormatted;
   document.getElementById('payment-total-summary').textContent = totalFormatted;
+  document.getElementById('payment-shipping').textContent = shippingFormatted;
   document.getElementById('payment-order-details').textContent = cart.map(item => {
     const p = getProduct(item.id);
     return `${p.name} x${item.qty}`;
@@ -365,7 +377,8 @@ function submitOrder(e) {
       '📞 *Téléphone:* ' + phone + '\n' +
       '📍 *Adresse:* ' + address + '\n\n' +
       '📦 *Détails de la commande:*\n' + orderDetails + '\n\n' +
-      '💰 *Total:* ' + totalFormatted + '\n\n' +
+      '📦 *Frais de livraison:* ' + shippingFormatted + '\n' +
+      '💰 *Total (produits + livraison):* ' + totalFormatted + '\n\n' +
       '💳 *Mode de paiement:* ' + paymentLabel + '\n' +
       paymentMsg
     );

@@ -89,5 +89,41 @@
     "hasCover": true,
     "price": 10000,
     "description": "Deck UNO personnalisé Naruto avec 69 cartes aux couleurs de l'univers Naruto."
+  },
+  {
+    "id": "attaque-des-titans",
+    "name": "Attaque des Titans",
+    "path": "Attaque des titans",
+    "cardCount": 69,
+    "hasCover": true,
+    "price": 10000,
+    "description": "Deck UNO personnalisé Attaque des Titans avec 69 cartes aux couleurs de l'univers SNK."
+  },
+  {
+    "id": "bleach",
+    "name": "Bleach",
+    "path": "Bleach",
+    "cardCount": 69,
+    "hasCover": true,
+    "price": 10000,
+    "description": "Deck UNO personnalisé Bleach avec 69 cartes aux couleurs de l'univers Bleach."
+  },
+  {
+    "id": "hunter-x-hunter",
+    "name": "Hunter x Hunter",
+    "path": "Hunter X Hunter",
+    "cardCount": 69,
+    "hasCover": true,
+    "price": 10000,
+    "description": "Deck UNO personnalisé Hunter x Hunter avec 69 cartes aux couleurs de l'univers HxH."
+  },
+  {
+    "id": "marvel",
+    "name": "Marvel",
+    "path": "Marvel",
+    "cardCount": 69,
+    "hasCover": true,
+    "price": 10000,
+    "description": "Deck UNO personnalisé Marvel avec 69 cartes aux couleurs de l'univers Marvel."
   }
 ]
