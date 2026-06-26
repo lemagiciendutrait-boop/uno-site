@@ -1,6 +1,10 @@
 let products = [];
 let cart = JSON.parse(localStorage.getItem('unoCart') || '[]');
 const SHIPPING_FEE = 2000;
+const PROMO_CODES = {
+  'CREATEUR5000': 0.5
+};
+let appliedPromo = null;
 
 function imagePath(deckPath, filename) {
   return 'image deck/' + deckPath + '/' + filename;
@@ -292,12 +296,38 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
 });
 
+function applyPromoCode() {
+  const input = document.getElementById('promo-code');
+  const msg = document.getElementById('promo-message');
+  const code = input.value.trim().toUpperCase();
+
+  if (PROMO_CODES[code]) {
+    appliedPromo = { code, discount: PROMO_CODES[code] };
+    msg.textContent = '✅ Code promo appliqué : -50% sur tous les decks !';
+    msg.className = 'promo-success';
+    document.querySelector('.btn-apply').classList.add('success');
+    loadCheckout();
+  } else {
+    appliedPromo = null;
+    msg.textContent = '❌ Code promo invalide';
+    msg.className = 'promo-error';
+    document.querySelector('.btn-apply').classList.remove('success');
+    loadCheckout();
+  }
+}
+
+function getDiscountedPrice(price) {
+  if (!appliedPromo) return price;
+  return Math.round(price * (1 - appliedPromo.discount));
+}
+
 // --- Checkout page ---
 function loadCheckout() {
   const itemsEl = document.getElementById('order-items');
   const subtotalEl = document.getElementById('checkout-subtotal');
   const shippingEl = document.getElementById('checkout-shipping');
   const totalEl = document.getElementById('checkout-total');
+  const discountEl = document.getElementById('checkout-discount');
   if (!itemsEl) return;
 
   if (cart.length === 0) {
@@ -311,18 +341,29 @@ function loadCheckout() {
   itemsEl.innerHTML = cart.map(item => {
     const p = getProduct(item.id);
     if (!p) return '';
+    const unitPrice = appliedPromo ? getDiscountedPrice(p.price) : p.price;
     return `
       <div class="order-item">
         <span>${p.name} x${item.qty}</span>
-        <span>${formatPrice(p.price * item.qty)}</span>
+        <span>${formatPrice(unitPrice * item.qty)}</span>
       </div>
     `;
   }).join('');
 
   const subtotal = getCartTotal();
+  const discounted = appliedPromo ? getDiscountedPrice(subtotal) : subtotal;
+  const savings = subtotal - discounted;
   if (subtotalEl) subtotalEl.textContent = formatPrice(subtotal);
+  if (discountEl) {
+    if (appliedPromo) {
+      discountEl.textContent = '-' + formatPrice(savings);
+      discountEl.parentElement.style.display = 'flex';
+    } else {
+      discountEl.parentElement.style.display = 'none';
+    }
+  }
   if (shippingEl) shippingEl.textContent = formatPrice(SHIPPING_FEE);
-  if (totalEl) totalEl.textContent = formatPrice(subtotal + SHIPPING_FEE);
+  if (totalEl) totalEl.textContent = formatPrice(discounted + SHIPPING_FEE);
 }
 
 function submitOrder(e) {
@@ -336,14 +377,18 @@ function submitOrder(e) {
   const phone = document.getElementById('phone').value;
   const address = document.getElementById('address').value;
   const subtotal = getCartTotal();
-  const total = subtotal + SHIPPING_FEE;
+  const discounted = appliedPromo ? getDiscountedPrice(subtotal) : subtotal;
+  const total = discounted + SHIPPING_FEE;
+  const savings = subtotal - discounted;
   const subtotalFormatted = formatPrice(subtotal);
+  const discountFormatted = appliedPromo ? '-' + formatPrice(savings) : '';
   const shippingFormatted = formatPrice(SHIPPING_FEE);
   const totalFormatted = formatPrice(total);
 
   const orderDetails = cart.map(item => {
     const p = getProduct(item.id);
-    return `${p.name} x${item.qty} = ${formatPrice(p.price * item.qty)}`;
+    const unitPrice = appliedPromo ? getDiscountedPrice(p.price) : p.price;
+    return `${p.name} x${item.qty} = ${formatPrice(unitPrice * item.qty)}`;
   }).join('\n');
 
   const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
@@ -357,6 +402,7 @@ function submitOrder(e) {
   document.getElementById('payment-total-delivery').textContent = totalFormatted;
   document.getElementById('payment-total-delivery2').textContent = totalFormatted;
   document.getElementById('payment-total-summary').textContent = totalFormatted;
+  document.getElementById('payment-promo-info').style.display = appliedPromo ? 'block' : 'none';
   document.getElementById('payment-shipping').textContent = shippingFormatted;
   document.getElementById('payment-order-details').textContent = cart.map(item => {
     const p = getProduct(item.id);
@@ -371,14 +417,19 @@ function submitOrder(e) {
       ? '📦 *Paiement à la livraison*'
       : '✅ *Paiement ' + paymentLabel + ' effectué*';
 
+    const promoLine = appliedPromo
+      ? '🎟️ *Code promo:* ' + appliedPromo.code + ' (-' + formatPrice(savings) + ')\n'
+      : '';
+
     const message = encodeURIComponent(
       '🃏 *Nouvelle commande UNO Personnalisé* 🃏\n\n' +
       '👤 *Nom:* ' + name + '\n' +
       '📞 *Téléphone:* ' + phone + '\n' +
       '📍 *Adresse:* ' + address + '\n\n' +
       '📦 *Détails de la commande:*\n' + orderDetails + '\n\n' +
+      promoLine +
       '📦 *Frais de livraison:* ' + shippingFormatted + '\n' +
-      '💰 *Total (produits + livraison):* ' + totalFormatted + '\n\n' +
+      '💰 *Total:* ' + totalFormatted + '\n\n' +
       '💳 *Mode de paiement:* ' + paymentLabel + '\n' +
       paymentMsg
     );
@@ -387,6 +438,10 @@ function submitOrder(e) {
     cart = [];
     localStorage.setItem('unoCart', JSON.stringify(cart));
     updateCartUI();
+    appliedPromo = null;
+    document.getElementById('promo-code').value = '';
+    document.getElementById('promo-message').textContent = '';
+    document.querySelector('.btn-apply').classList.remove('success');
     showToast('✅ Commande envoyée ! Nous vous contacterons bientôt.');
     document.getElementById('checkout-form').reset();
     loadCheckout();

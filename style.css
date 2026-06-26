@@ -655,6 +655,31 @@ header nav a:hover {
 }
 
 /* Payment methods selection */
+.btn-apply {
+  background: #333;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-apply:hover {
+  background: #555;
+}
+.btn-apply.success {
+  background: #28a745;
+}
+.promo-success {
+  color: #28a745 !important;
+  font-weight: 600;
+}
+.promo-error {
+  color: #ed1c24 !important;
+  font-weight: 600;
+}
+
 .payment-methods {
   display: flex;
   gap: 1rem;

@@ -27,6 +27,10 @@
         <span>Sous-total</span>
         <span id="checkout-subtotal">0 FCFA</span>
       </div>
+      <div class="order-total" id="discount-row" style="display:none;color:#28a745">
+        <span>Remise</span>
+        <span id="checkout-discount">0 FCFA</span>
+      </div>
       <div class="order-total">
         <span>Livraison</span>
         <span id="checkout-shipping">2 000 FCFA</span>
@@ -48,6 +52,16 @@
       <div class="form-group">
         <label for="address">Adresse de livraison</label>
         <textarea id="address" required placeholder="Votre adresse complète"></textarea>
+      </div>
+
+      <div class="form-group" id="promo-group">
+        <label>Code promo (si vous en avez un)</label>
+        <div style="display:flex;gap:0.5rem">
+          <input type="text" id="promo-code" placeholder="Entrez votre code" style="flex:1">
+          <button type="button" class="btn-apply" onclick="applyPromoCode()">Appliquer</button>
+        </div>
+        <p id="promo-message" style="font-size:0.85rem;margin-top:0.3rem"></p>
+        <p style="font-size:0.8rem;color:#999;margin-top:0.2rem">Vous avez reçu un code promo ? Saisissez-le ici pour bénéficier d'une réduction.</p>
       </div>
 
       <div class="form-group">
@@ -124,6 +138,7 @@
         <p><strong>Commande :</strong> <span id="payment-order-details"></span></p>
         <p><strong>Nom :</strong> <span id="payment-name"></span></p>
         <p><strong>Livraison :</strong> <span id="payment-shipping"></span></p>
+        <p id="payment-promo-info" style="display:none;color:#28a745"><strong>Code promo appliqué ✅</strong></p>
         <p><strong>Total :</strong> <span id="payment-total-summary" style="color:#ed1c24;font-size:1.3rem"></span></p>
       </div>
       <button id="btn-whatsapp" class="btn-whatsapp">
