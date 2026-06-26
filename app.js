@@ -1,9 +1,6 @@
 let products = [];
 let cart = JSON.parse(localStorage.getItem('unoCart') || '[]');
 const SHIPPING_FEE = 2000;
-const PROMO_CODES = {
-  'CREATEUR5000': 0.5
-};
 let appliedPromo = null;
 
 function imagePath(deckPath, filename) {
@@ -296,24 +293,40 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
 });
 
-function applyPromoCode() {
+async function applyPromoCode() {
   const input = document.getElementById('promo-code');
   const msg = document.getElementById('promo-message');
+  const btn = document.querySelector('.btn-apply');
   const code = input.value.trim().toUpperCase();
+  if (!code) return;
 
-  if (PROMO_CODES[code]) {
-    appliedPromo = { code, discount: PROMO_CODES[code] };
-    msg.textContent = '✅ Code promo appliqué : -50% sur tous les decks !';
-    msg.className = 'promo-success';
-    document.querySelector('.btn-apply').classList.add('success');
-    loadCheckout();
-  } else {
-    appliedPromo = null;
-    msg.textContent = '❌ Code promo invalide';
+  btn.textContent = '...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch('/api/check-promo?code=' + encodeURIComponent(code));
+    const data = await res.json();
+
+    if (data.valid) {
+      appliedPromo = { code, discount: data.discount };
+      msg.textContent = '✅ Code promo appliqué : -50% sur tous les decks !';
+      msg.className = 'promo-success';
+      btn.classList.add('success');
+      loadCheckout();
+    } else {
+      appliedPromo = null;
+      msg.textContent = '❌ ' + data.message;
+      msg.className = 'promo-error';
+      btn.classList.remove('success');
+      loadCheckout();
+    }
+  } catch {
+    msg.textContent = '❌ Erreur de validation du code';
     msg.className = 'promo-error';
-    document.querySelector('.btn-apply').classList.remove('success');
-    loadCheckout();
   }
+
+  btn.textContent = 'Appliquer';
+  btn.disabled = false;
 }
 
 function getDiscountedPrice(price) {
@@ -434,6 +447,14 @@ function submitOrder(e) {
       paymentMsg
     );
     window.open('https://wa.me/?text=' + message, '_blank');
+
+    if (appliedPromo) {
+      fetch('/api/use-promo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: appliedPromo.code })
+      });
+    }
 
     cart = [];
     localStorage.setItem('unoCart', JSON.stringify(cart));
