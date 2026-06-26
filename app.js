@@ -52,7 +52,7 @@ function renderProducts() {
         <div class="card-body">
           <h3>${p.name}</h3>
           <div class="meta">
-            <span>${p.cardCount} cartes</span>
+            <span>${p.cardCount} cartes illustrées</span>
             <span class="price">${formatPrice(p.price)}</span>
           </div>
           <button class="btn-add" onclick="event.stopPropagation(); addToCart('${p.id}')">
@@ -252,14 +252,14 @@ async function loadDeckPage() {
         <h1>${deck.name}</h1>
         <p>${deck.description}</p>
         <div class="price">${formatPrice(deck.price)}</div>
-        <p style="color:#666">${deck.cardCount} cartes dans ce deck</p>
+        <p style="color:#666">108 cartes UNO complètes — ${deck.cardCount} illustrations uniques en aperçu ci-dessous</p>
         <button class="btn-add" onclick="addToCart('${deck.id}')">
           Ajouter au panier
         </button>
       </div>
     </div>
-    <h2>Toutes les cartes</h2>
-    <p class="cards-count">${deck.cardCount} cartes au total</p>
+    <h2>Aperçu des cartes</h2>
+    <p class="cards-count">${deck.cardCount} illustrations uniques sur les 108 cartes du deck</p>
     <div class="cards-grid" id="cards-grid"></div>
   `;
 
