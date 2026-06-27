@@ -3,12 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || (() => {
-  const defaultPwd = 'admin' + Date.now().toString(36);
-  console.log('⚠️  ADMIN_PASSWORD non défini. Mot de passe temporaire: ' + defaultPwd);
-  console.log('💡 Configurez une variable d\'environnement ADMIN_PASSWORD en production.');
-  return defaultPwd;
-})();
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'mf1979@';
 const SUGGESTIONS_FILE = path.join(__dirname, 'suggestions.json');
 const PROMO_FILE = path.join(__dirname, 'promo-codes.json');
 
