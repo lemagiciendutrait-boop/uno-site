@@ -624,6 +624,22 @@ header nav a:hover {
 .btn-copy:hover {
   background: #16a34a;
 }
+.btn-wave-open {
+  background: #0078d4;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+.btn-wave-open:hover {
+  background: #005a9e;
+}
 .payment-note {
   font-size: 0.9rem;
   color: #666;

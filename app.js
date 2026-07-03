@@ -216,6 +216,20 @@ function copyNumber(num) {
   showToast('✅ Numéro copié !');
 }
 
+function openWaveApp() {
+  const ua = navigator.userAgent;
+  if (/android/i.test(ua)) {
+    window.location.href = 'intent://#Intent;scheme=wave;package=com.wave.personal;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.wave.personal;end';
+  } else if (/iphone|ipad|ipod/i.test(ua)) {
+    window.location.href = 'wave://';
+    setTimeout(() => {
+      window.location.href = 'https://apps.apple.com/sn/app/wave-mobile-money/id1523884528';
+    }, 500);
+  } else {
+    window.open('https://play.google.com/store/apps/details?id=com.wave.personal', '_blank');
+  }
+}
+
 function selectPayment(method) {
   document.getElementById('payment-box-wave').style.display = method === 'wave' ? 'block' : 'none';
   document.getElementById('payment-box-orange').style.display = method === 'orange' ? 'block' : 'none';
