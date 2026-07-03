@@ -1,0 +1,12 @@
+{
+  "name": "uno-personnalise",
+  "version": "1.0.0",
+  "description": "Site e-commerce de decks UNO personnalisés - Sénégal",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["uno", "personnalisé", "cartes", "sénégal", "wave", "orange-money"],
+  "license": "MIT"
+}

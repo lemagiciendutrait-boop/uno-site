@@ -189,7 +189,7 @@ function suggestDeck() {
     '- *Pourquoi :* ' + reason + '\n\n' +
     'Merci !'
   );
-  window.open('https://wa.me/?text=' + msg, '_blank');
+  window.open('https://wa.me/221785220081?text=' + msg, '_blank');
 }
 
 function customDeckContact() {
@@ -203,7 +203,7 @@ function customDeckContact() {
     '- *Autres précisions :* \n\n' +
     'Merci de me donner un devis.'
   );
-  window.open('https://wa.me/?text=' + msg, '_blank');
+  window.open('https://wa.me/221785220081?text=' + msg, '_blank');
 }
 
 function copyNumber(num) {
@@ -446,7 +446,7 @@ function submitOrder(e) {
       '💳 *Mode de paiement:* ' + paymentLabel + '\n' +
       paymentMsg
     );
-    window.open('https://wa.me/?text=' + message, '_blank');
+    window.open('https://wa.me/221785220081?text=' + message, '_blank');
 
     if (appliedPromo) {
       fetch('/api/use-promo', {

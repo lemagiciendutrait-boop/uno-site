@@ -941,6 +941,17 @@ footer .footer-links a {
 footer .footer-links a:hover {
   text-decoration: underline;
 }
+footer .footer-contact {
+  margin: 0.8rem 0;
+}
+footer .footer-contact a {
+  color: #25d366;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+footer .footer-contact a:hover {
+  text-decoration: underline;
+}
 
 @media (max-width: 768px) {
   .hero h1 {

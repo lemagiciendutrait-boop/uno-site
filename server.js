@@ -164,9 +164,10 @@ http.createServer(async (req, res) => {
 
   // --- Serve static files ---
   serveFile(res, pathname);
-}).listen(3000, () => {
+}).listen(process.env.PORT || 3000, () => {
+  const port = process.env.PORT || 3000;
   initPromoCodes();
-  console.log('✅ Serveur démarré sur http://localhost:3000');
-  console.log('🔐 Admin: http://localhost:3000/admin.html');
+  console.log('✅ Serveur démarré sur http://localhost:' + port);
+  console.log('🔐 Admin: http://localhost:' + port + '/admin.html');
   console.log('🔄 Appuyez sur Ctrl+C pour arrêter');
 });
