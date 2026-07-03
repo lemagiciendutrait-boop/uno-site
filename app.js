@@ -2,6 +2,7 @@ let products = [];
 let cart = JSON.parse(localStorage.getItem('unoCart') || '[]');
 const SHIPPING_FEE = 2000;
 let appliedPromo = null;
+let searchQuery = '';
 
 function imagePath(deckPath, filename) {
   return 'image deck/' + deckPath + '/' + filename;
@@ -24,12 +25,26 @@ async function loadProducts() {
   products = await res.json();
   renderProducts();
   updateCartUI();
+  const spinner = document.getElementById('loading-spinner');
+  if (spinner) spinner.style.display = 'none';
+}
+
+function filterProducts(query) {
+  searchQuery = query.toLowerCase().trim();
+  renderProducts();
 }
 
 function renderProducts() {
   const grid = document.getElementById('products-grid');
   if (!grid) return;
-  grid.innerHTML = products.map(p => {
+  const filtered = searchQuery
+    ? products.filter(p => p.name.toLowerCase().includes(searchQuery))
+    : products;
+  if (filtered.length === 0 && searchQuery) {
+    grid.innerHTML = '<div class="no-results">😕 Aucun deck trouvé pour "<strong>' + searchQuery + '</strong>"</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(p => {
     if (p.isCustom) {
       return `
         <div class="product-card custom-card" onclick="customDeckContact()">
@@ -78,6 +93,12 @@ function addToCart(id) {
   }
   localStorage.setItem('unoCart', JSON.stringify(cart));
   updateCartUI();
+  const badge = document.getElementById('cart-count');
+  if (badge) {
+    badge.classList.remove('badge-bounce');
+    void badge.offsetWidth;
+    badge.classList.add('badge-bounce');
+  }
   showToast('✅ ' + getProduct(id).name + ' ajouté au panier');
 }
 
@@ -414,9 +435,23 @@ function submitOrder(e) {
     return;
   }
 
-  const name = document.getElementById('name').value;
-  const phone = document.getElementById('phone').value;
-  const address = document.getElementById('address').value;
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const address = document.getElementById('address').value.trim();
+
+  let errors = [];
+  if (!name) errors.push('nom');
+  if (!phone) errors.push('téléphone');
+  if (!address) errors.push('adresse');
+
+  document.querySelectorAll('.form-group input, .form-group textarea').forEach(el => {
+    el.style.borderColor = el.value.trim() ? '#ddd' : '#ed1c24';
+  });
+
+  if (errors.length > 0) {
+    showToast('❌ Veuillez remplir : ' + errors.join(', '));
+    return;
+  }
   const subtotal = getCartTotal();
   const discounted = appliedPromo ? getDiscountedPrice(subtotal) : subtotal;
   const total = discounted + SHIPPING_FEE;
@@ -452,6 +487,8 @@ function submitOrder(e) {
   document.getElementById('payment-name').textContent = name;
 
   document.getElementById('payment-info').style.display = 'block';
+
+  document.getElementById('payment-info').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   document.getElementById('btn-whatsapp').onclick = function() {
     const paymentMsg = paymentMethod === 'delivery'
@@ -491,10 +528,11 @@ function submitOrder(e) {
     document.getElementById('promo-code').value = '';
     document.getElementById('promo-message').textContent = '';
     document.querySelector('.btn-apply').classList.remove('success');
-    showToast('✅ Commande envoyée ! Nous vous contacterons bientôt.');
     document.getElementById('checkout-form').reset();
     loadCheckout();
     document.getElementById('payment-info').style.display = 'none';
+
+    document.getElementById('success-modal').classList.add('open');
   };
 }
 

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Commander - Uno Personnalisé</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🃏</text></svg>">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -168,6 +169,15 @@
   </div>
 
   <div class="toast" id="toast"></div>
+
+  <div class="modal" id="success-modal" onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="success-content">
+      <div class="success-icon">✅</div>
+      <h2>Commande envoyée !</h2>
+      <p>Nous vous contacterons sur WhatsApp dans les plus brefs délais.</p>
+      <a href="index.html" class="btn">Retour à l'accueil</a>
+    </div>
+  </div>
 
   <footer>
     <div class="footer-links">
