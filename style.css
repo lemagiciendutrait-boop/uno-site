@@ -624,7 +624,7 @@ header nav a:hover {
 .btn-copy:hover {
   background: #16a34a;
 }
-.btn-wave-open {
+.btn-app-open {
   background: #0078d4;
   color: white;
   border: none;
@@ -637,7 +637,7 @@ header nav a:hover {
   margin-top: 0.5rem;
   width: 100%;
 }
-.btn-wave-open:hover {
+.btn-app-open:hover {
   background: #005a9e;
 }
 .payment-note {

@@ -230,6 +230,20 @@ function openWaveApp() {
   }
 }
 
+function openOrangeApp() {
+  const ua = navigator.userAgent;
+  if (/android/i.test(ua)) {
+    window.location.href = 'intent://#Intent;scheme=orangemoney;package=com.orange.mobile.orangemoney;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.orange.mobile.orangemoney;end';
+  } else if (/iphone|ipad|ipod/i.test(ua)) {
+    window.location.href = 'orangemoney://';
+    setTimeout(() => {
+      window.location.href = 'https://apps.apple.com/sn/app/orange-money-senegal/id1447224280';
+    }, 500);
+  } else {
+    window.open('https://play.google.com/store/apps/details?id=com.orange.mobile.orangemoney', '_blank');
+  }
+}
+
 function selectPayment(method) {
   document.getElementById('payment-box-wave').style.display = method === 'wave' ? 'block' : 'none';
   document.getElementById('payment-box-orange').style.display = method === 'orange' ? 'block' : 'none';
