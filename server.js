@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'mf1979@';
 const SUGGESTIONS_FILE = path.join(__dirname, 'suggestions.json');
 const PROMO_FILE = path.join(__dirname, 'promo-codes.json');
+const VISITS_FILE = path.join(__dirname, 'visits.json');
 
 const mimeTypes = {
   '.html': 'text/html',
@@ -64,6 +65,23 @@ function initPromoCodes() {
   writePromoCodes(codes);
   console.log('🎟️ Codes promo créés :');
   codes.forEach(c => console.log('   ' + c.code + ' → ' + c.creator));
+}
+
+function readVisits() {
+  try { return JSON.parse(fs.readFileSync(VISITS_FILE, 'utf-8')); }
+  catch { return []; }
+}
+
+function writeVisits(data) {
+  const max = 500;
+  if (data.length > max) data = data.slice(data.length - max);
+  fs.writeFileSync(VISITS_FILE, JSON.stringify(data, null, 2), 'utf-8');
+}
+
+function getClientIP(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  const raw = forwarded ? forwarded.split(',')[0].trim() : req.socket.remoteAddress || 'unknown';
+  return raw.replace(/\d+$/, 'XXX');
 }
 
 function serveFile(res, url) {
@@ -162,6 +180,24 @@ http.createServer(async (req, res) => {
     return jsonResponse(res, 200, readPromoCodes());
   }
 
+  // --- API: Admin get visits ---
+  if (req.method === 'GET' && pathname === '/api/admin/visits') {
+    if (params.get('password') !== ADMIN_PASSWORD) {
+      return jsonResponse(res, 401, { error: 'Unauthorized' });
+    }
+    const visits = readVisits();
+    const now = new Date();
+    const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+    const last7 = new Date(now.getTime() - 7 * 86400000).toISOString();
+    return jsonResponse(res, 200, {
+      total: visits.length,
+      today: visits.filter(v => v.date >= startToday).length,
+      last7: visits.filter(v => v.date >= last7).length,
+      uniqueIPs: new Set(visits.map(v => v.ip)).size,
+      recent: visits.reverse().slice(0, 20)
+    });
+  }
+
   // --- API: Admin generate creator code ---
   if (req.method === 'POST' && pathname === '/api/admin/promos/generate') {
     const body = await readBody(req);
@@ -183,6 +219,18 @@ http.createServer(async (req, res) => {
     codes.push(newCode);
     writePromoCodes(codes);
     return jsonResponse(res, 200, { success: true, code: newCode });
+  }
+
+  // --- Log visit (HTML pages only) ---
+  if (pathname.endsWith('.html') || pathname === '/' || pathname === '/index.html') {
+    const visits = readVisits();
+    visits.push({
+      date: new Date().toISOString(),
+      page: pathname === '/' ? '/index.html' : pathname,
+      ip: getClientIP(req),
+      agent: (req.headers['user-agent'] || '').substring(0, 80)
+    });
+    writeVisits(visits);
   }
 
   // --- Serve static files ---

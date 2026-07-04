@@ -35,6 +35,13 @@
 
     <div class="admin-grid">
       <div class="admin-card">
+        <h3>📊 Visites</h3>
+        <div id="visits-stats">
+          <p style="color:#999">Chargement...</p>
+        </div>
+      </div>
+
+      <div class="admin-card">
         <h3>💡 Suggestions de decks</h3>
         <div id="suggestions-list">
           <p style="color:#999">Chargement...</p>
@@ -88,6 +95,23 @@
     async function loadAdminData() {
       const pwd = sessionStorage.getItem(PASSWORD_KEY);
       if (!pwd) return;
+
+      // Load visits
+      const visitRes = await fetch('/api/admin/visits?password=' + encodeURIComponent(pwd));
+      if (visitRes.ok) {
+        const v = await visitRes.json();
+        document.getElementById('visits-stats').innerHTML = `
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem">
+            <div class="stat-box"><span class="stat-num">${v.total}</span><span class="stat-label">Total visites</span></div>
+            <div class="stat-box"><span class="stat-num">${v.today}</span><span class="stat-label">Aujourd'hui</span></div>
+            <div class="stat-box"><span class="stat-num">${v.last7}</span><span class="stat-label">7 jours</span></div>
+            <div class="stat-box"><span class="stat-num">${v.uniqueIPs}</span><span class="stat-label">Visiteurs</span></div>
+          </div>
+          <div style="font-size:0.85rem;color:#999;max-height:200px;overflow-y:auto">
+            ${v.recent.map(r => '<div style="padding:0.3rem 0;border-bottom:1px solid #f0f0f0">' + new Date(r.date).toLocaleString('fr-FR') + ' — ' + r.page + ' — ' + r.ip + '</div>').join('')}
+          </div>
+        `;
+      }
 
       // Load suggestions
       const res = await fetch('/api/admin/suggestions?password=' + encodeURIComponent(pwd));
@@ -245,6 +269,24 @@
       margin-bottom: 1rem;
       padding-bottom: 0.5rem;
       border-bottom: 2px solid #eee;
+    }
+    .stat-box {
+      text-align: center;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+    .stat-num {
+      display: block;
+      font-size: 2rem;
+      font-weight: 800;
+      color: #ed1c24;
+    }
+    .stat-label {
+      display: block;
+      font-size: 0.8rem;
+      color: #999;
+      margin-top: 0.2rem;
     }
     .admin-grid {
       display: grid;
