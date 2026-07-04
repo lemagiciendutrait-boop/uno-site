@@ -1,6 +1,7 @@
 node_modules/
 suggestions.json
 promo-codes.json
+visits.json
 .env
 .DS_Store
 Thumbs.db
