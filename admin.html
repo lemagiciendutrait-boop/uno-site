@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Uno Personnalisé</title>
+  <title>Admin - Cartes Personnalisées</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🃏</text></svg>">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <div class="logo">UNO <span>Admin</span></div>
+    <div class="logo">CARTES <span>Admin</span></div>
     <nav>
       <a href="index.html">Accueil</a>
       <a href="admin.html" style="opacity:0.8">Admin</a>
@@ -48,6 +48,14 @@
 
       <div class="admin-card">
         <h3>🎟️ Codes promo créateurs</h3>
+        <div class="promo-generator">
+          <h4>➕ Générer un nouveau code</h4>
+          <div style="display:flex;gap:0.5rem;margin-bottom:1rem">
+            <input type="text" id="new-creator-name" placeholder="Nom du créateur (ex: @manga_snk)" style="flex:1;padding:0.6rem;border:1px solid #ddd;border-radius:6px;font-size:0.95rem">
+            <button class="btn-generate" onclick="generateCreatorCode()">🎟️ Générer</button>
+          </div>
+          <p id="generate-result" style="font-size:0.9rem;display:none"></p>
+        </div>
         <div id="promos-list">
           <p style="color:#999">Chargement...</p>
         </div>
@@ -125,21 +133,56 @@
         if (promos.length === 0) {
           promoList.innerHTML = '<p style="color:#999">Aucun code promo.</p>';
         } else {
-          promoList.innerHTML = promos.map(p => `
+          const total = promos.length;
+          const used = promos.filter(p => p.used).length;
+          const active = total - used;
+          promoList.innerHTML = `
+            <div class="promo-stats">
+              <span>📊 <strong>${total}</strong> codes · <span style="color:#28a745">${active} actifs</span> · <span style="color:#dc2626">${used} utilisés</span></span>
+            </div>
+          ` + promos.map(p => `
             <div class="promo-item ${p.used ? 'promo-used' : 'promo-active'}">
               <div class="promo-header">
                 <code class="promo-code">${p.code}</code>
                 <span class="promo-status ${p.used ? 'status-used' : 'status-active'}">${p.used ? 'Utilisé' : 'Actif'}</span>
               </div>
               <div class="promo-details">
-                <span>Créateur : ${p.creator}</span>
-                <span>-50%</span>
-                ${p.usedAt ? '<span style="color:#999;font-size:0.8rem">Utilisé le ' + new Date(p.usedAt).toLocaleDateString('fr-FR') + '</span>' : ''}
+                <span>👤 ${p.creator}</span>
+                <span>📅 ${new Date(p.createdAt).toLocaleDateString('fr-FR')}</span>
+                ${p.usedAt ? '<span style="color:#dc2626;font-size:0.8rem">✅ Utilisé le ' + new Date(p.usedAt).toLocaleDateString('fr-FR') + '</span>' : ''}
               </div>
             </div>
           `).join('');
         }
       }
+    }
+
+    async function generateCreatorCode() {
+      const name = document.getElementById('new-creator-name').value.trim();
+      const result = document.getElementById('generate-result');
+      if (!name) {
+        result.textContent = '❌ Veuillez entrer un nom de créateur';
+        result.style.display = 'block';
+        result.style.color = '#ed1c24';
+        return;
+      }
+      const pwd = sessionStorage.getItem(PASSWORD_KEY);
+      const res = await fetch('/api/admin/promos/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ creator: name, password: pwd })
+      });
+      if (!res.ok) {
+        result.textContent = '❌ Erreur lors de la génération';
+        result.style.color = '#ed1c24';
+      } else {
+        const data = await res.json();
+        result.innerHTML = '✅ Code généré : <code style="background:#333;color:#ffd700;padding:0.2rem 0.6rem;border-radius:4px;font-weight:700">' + data.code.code + '</code> pour <strong>' + data.code.creator + '</strong> (-50%)';
+        result.style.color = '#28a745';
+        document.getElementById('new-creator-name').value = '';
+        loadAdminData();
+      }
+      result.style.display = 'block';
     }
 
     async function deleteSuggestion(id) {
@@ -322,6 +365,38 @@
       font-size: 0.85rem;
       color: #666;
     }
+    .promo-stats {
+      background: #f8f9fa;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      text-align: center;
+    }
+    .promo-generator {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .promo-generator h4 {
+      margin-bottom: 0.5rem;
+      color: #166534;
+    }
+    .btn-generate {
+      background: #22c55e;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn-generate:hover {
+      background: #16a34a;
+    }
   </style>
 
   <footer>
@@ -332,7 +407,7 @@
     <div class="footer-contact">
       <a href="https://wa.me/221785220081" target="_blank">📱 Contactez-nous sur WhatsApp : +221 78 522 00 81</a>
     </div>
-    <p>&copy; 2026 Uno Personnalisé - Tous droits réservés</p>
+    <p>&copy; 2026 Cartes Personnalisées - Tous droits réservés</p>
   </footer>
 </body>
 </html>

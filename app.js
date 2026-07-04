@@ -1,5 +1,5 @@
 let products = [];
-let cart = JSON.parse(localStorage.getItem('unoCart') || '[]');
+let cart = JSON.parse(localStorage.getItem('cartesCart') || '[]');
 const SHIPPING_FEE = 2000;
 let appliedPromo = null;
 let searchQuery = '';
@@ -91,7 +91,7 @@ function addToCart(id) {
   } else {
     cart.push({ id, qty: 1 });
   }
-  localStorage.setItem('unoCart', JSON.stringify(cart));
+  localStorage.setItem('cartesCart', JSON.stringify(cart));
   updateCartUI();
   const badge = document.getElementById('cart-count');
   if (badge) {
@@ -104,7 +104,7 @@ function addToCart(id) {
 
 function removeFromCart(id) {
   cart = cart.filter(item => item.id !== id);
-  localStorage.setItem('unoCart', JSON.stringify(cart));
+  localStorage.setItem('cartesCart', JSON.stringify(cart));
   updateCartUI();
 }
 
@@ -116,7 +116,7 @@ function updateQty(id, delta) {
     removeFromCart(id);
     return;
   }
-  localStorage.setItem('unoCart', JSON.stringify(cart));
+  localStorage.setItem('cartesCart', JSON.stringify(cart));
   updateCartUI();
 }
 
@@ -216,7 +216,7 @@ function suggestDeck() {
 function customDeckContact() {
   const msg = encodeURIComponent(
     '🎨 *Demande de deck personnalisé* 🎨\n\n' +
-    'Bonjour ! Je souhaiterais commander un deck UNO personnalisé.\n\n' +
+    'Bonjour ! Je souhaiterais commander un deck personnalisé.\n\n' +
     'Voici mes idées :\n' +
     '- *Thème / Personnages :* \n' +
     '- *Nombre de cartes :* \n' +
@@ -293,7 +293,7 @@ async function loadDeckPage() {
     return;
   }
 
-  document.title = deck.name + ' - Uno Personnalisé';
+  document.title = deck.name + ' - Cartes Personnalisées';
 
   container.innerHTML = `
     <div class="deck-header">
@@ -302,7 +302,7 @@ async function loadDeckPage() {
         <h1>${deck.name}</h1>
         <p>${deck.description}</p>
         <div class="price">${formatPrice(deck.price)}</div>
-        <p style="color:#666">108 cartes UNO complètes — ${deck.cardCount} illustrations uniques en aperçu ci-dessous</p>
+        <p style="color:#666">108 cartes complètes — ${deck.cardCount} illustrations uniques en aperçu ci-dessous</p>
         <button class="btn-add" onclick="addToCart('${deck.id}')">
           Ajouter au panier
         </button>
@@ -357,8 +357,9 @@ async function applyPromoCode() {
     const data = await res.json();
 
     if (data.valid) {
+      const pct = Math.round(data.discount * 100);
       appliedPromo = { code, discount: data.discount };
-      msg.textContent = '✅ Code promo appliqué : -50% sur tous les decks !';
+      msg.textContent = '✅ Code promo appliqué : -' + pct + '% sur tous les decks !';
       msg.className = 'promo-success';
       btn.classList.add('success');
       loadCheckout();
@@ -500,7 +501,7 @@ function submitOrder(e) {
       : '';
 
     const message = encodeURIComponent(
-      '🃏 *Nouvelle commande UNO Personnalisé* 🃏\n\n' +
+      '🃏 *Nouvelle commande Cartes Personnalisées* 🃏\n\n' +
       '👤 *Nom:* ' + name + '\n' +
       '📞 *Téléphone:* ' + phone + '\n' +
       '📍 *Adresse:* ' + address + '\n\n' +
@@ -522,7 +523,7 @@ function submitOrder(e) {
     }
 
     cart = [];
-    localStorage.setItem('unoCart', JSON.stringify(cart));
+    localStorage.setItem('cartesCart', JSON.stringify(cart));
     updateCartUI();
     appliedPromo = null;
     document.getElementById('promo-code').value = '';

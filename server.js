@@ -162,6 +162,29 @@ http.createServer(async (req, res) => {
     return jsonResponse(res, 200, readPromoCodes());
   }
 
+  // --- API: Admin generate creator code ---
+  if (req.method === 'POST' && pathname === '/api/admin/promos/generate') {
+    const body = await readBody(req);
+    if (body.password !== ADMIN_PASSWORD) {
+      return jsonResponse(res, 401, { error: 'Unauthorized' });
+    }
+    const creatorName = (body.creator || '').trim();
+    if (!creatorName) {
+      return jsonResponse(res, 400, { error: 'Creator name is required' });
+    }
+    const codes = readPromoCodes();
+    const newCode = {
+      code: 'CREATEUR-' + crypto.randomBytes(3).toString('hex').toUpperCase(),
+      creator: creatorName,
+      used: false,
+      discount: 0.5,
+      createdAt: new Date().toISOString()
+    };
+    codes.push(newCode);
+    writePromoCodes(codes);
+    return jsonResponse(res, 200, { success: true, code: newCode });
+  }
+
   // --- Serve static files ---
   serveFile(res, pathname);
 }).listen(process.env.PORT || 3000, () => {

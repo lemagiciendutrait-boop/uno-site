@@ -951,6 +951,51 @@ header nav a:hover {
   background: #e6c200 !important;
 }
 
+/* Creator section */
+.creator-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+.creator-box {
+  background: linear-gradient(135deg, #0f3460, #1a1a2e);
+  border: 2px solid #22c55e;
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin: 2rem 0;
+}
+.creator-box h2 {
+  color: #22c55e;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.creator-box p {
+  color: #ccc;
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  line-height: 1.7;
+}
+.creator-box p strong {
+  color: #ffd700;
+}
+.btn-creator {
+  display: inline-block;
+  background: #22c55e;
+  color: white;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.1rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.btn-creator:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+}
+
 /* Suggest section */
 .suggest-section {
   max-width: 1200px;
