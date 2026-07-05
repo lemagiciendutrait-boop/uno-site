@@ -4,11 +4,10 @@ const path = require('path');
 const crypto = require('crypto');
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'mf1979@';
-const DATA_DIR = process.env.DATA_DIR || __dirname;
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-const SUGGESTIONS_FILE = path.join(DATA_DIR, 'suggestions.json');
-const PROMO_FILE = path.join(DATA_DIR, 'promo-codes.json');
-const VISITS_FILE = path.join(DATA_DIR, 'visits.json');
+const SUGGESTIONS_FILE = path.join(__dirname, 'suggestions.json');
+const VISITS_FILE = path.join(__dirname, 'visits.json');
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
 
 const mimeTypes = {
   '.html': 'text/html',
@@ -45,49 +44,6 @@ function jsonResponse(res, status, data) {
   res.end(JSON.stringify(data));
 }
 
-function readPromoCodes() {
-  try { return JSON.parse(fs.readFileSync(PROMO_FILE, 'utf-8')); }
-  catch { return []; }
-}
-
-function writePromoCodes(data) {
-  fs.writeFileSync(PROMO_FILE, JSON.stringify(data, null, 2), 'utf-8');
-}
-
-function initPromoCodes() {
-  if (fs.existsSync(PROMO_FILE)) return;
-  const seedFile = path.join(__dirname, 'promo-codes.seed.json');
-  if (fs.existsSync(seedFile)) {
-    const seed = JSON.parse(fs.readFileSync(seedFile, 'utf-8'));
-    writePromoCodes(seed);
-    console.log('🎟️ Codes promo importés depuis le seed :');
-    seed.forEach(c => console.log('   ' + c.code + ' → ' + c.creator));
-    return;
-  }
-  const creators = ['Createur 1', 'Createur 2', 'Createur 3', 'Createur 4', 'Createur 5'];
-  const codes = creators.map(name => ({
-    code: 'CREATEUR-' + crypto.randomBytes(3).toString('hex').toUpperCase(),
-    creator: name,
-    used: false,
-    discount: 0.5,
-    createdAt: new Date().toISOString()
-  }));
-  writePromoCodes(codes);
-  console.log('🎟️ Codes promo créés :');
-  codes.forEach(c => console.log('   ' + c.code + ' → ' + c.creator));
-}
-
-function readVisits() {
-  try { return JSON.parse(fs.readFileSync(VISITS_FILE, 'utf-8')); }
-  catch { return []; }
-}
-
-function writeVisits(data) {
-  const max = 500;
-  if (data.length > max) data = data.slice(data.length - max);
-  fs.writeFileSync(VISITS_FILE, JSON.stringify(data, null, 2), 'utf-8');
-}
-
 function getClientIP(req) {
   const forwarded = req.headers['x-forwarded-for'];
   const raw = forwarded ? forwarded.split(',')[0].trim() : req.socket.remoteAddress || 'unknown';
@@ -109,7 +65,97 @@ function serveFile(res, url) {
   });
 }
 
-http.createServer(async (req, res) => {
+// --- Supabase helpers ---
+
+const USE_SUPABASE = !!(SUPABASE_URL && SUPABASE_ANON_KEY);
+
+function supabaseHeaders() {
+  return {
+    'apikey': SUPABASE_ANON_KEY,
+    'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+}
+
+async function supabaseFetch(path, options = {}) {
+  const url = SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/' + path;
+  const res = await fetch(url, { ...options, headers: { ...supabaseHeaders(), ...options.headers } });
+  if (!res.ok) throw new Error('Supabase error: ' + res.status + ' ' + (await res.text()));
+  return res;
+}
+
+async function readPromoCodes() {
+  if (USE_SUPABASE) {
+    try {
+      const res = await supabaseFetch('promo_codes?select=*&order=created_at.asc');
+      return await res.json();
+    } catch { return []; }
+  }
+  try { return JSON.parse(fs.readFileSync(path.join(__dirname, 'promo-codes.json'), 'utf-8')); }
+  catch { return []; }
+}
+
+async function writePromoCodes(data) {
+  if (USE_SUPABASE) {
+    try {
+      await supabaseFetch('promo_codes', { method: 'DELETE', headers: { 'Prefer': '' } });
+      for (const c of data) {
+        await supabaseFetch('promo_codes', {
+          method: 'POST',
+          body: JSON.stringify({
+            code: c.code,
+            creator: c.creator,
+            used: c.used,
+            used_at: c.usedAt || null,
+            discount: c.discount,
+            created_at: c.createdAt
+          })
+        });
+      }
+    } catch (e) { console.error('Supabase write error:', e.message); }
+  } else {
+    fs.writeFileSync(path.join(__dirname, 'promo-codes.json'), JSON.stringify(data, null, 2), 'utf-8');
+  }
+}
+
+async function initPromoCodes() {
+  const codes = await readPromoCodes();
+  if (codes.length > 0) {
+    console.log('🎟️ ' + codes.length + ' codes promo chargés' + (USE_SUPABASE ? ' (Supabase)' : ''));
+    return;
+  }
+  const seedFile = path.join(__dirname, 'promo-codes.seed.json');
+  let seed = [];
+  if (fs.existsSync(seedFile)) {
+    seed = JSON.parse(fs.readFileSync(seedFile, 'utf-8'));
+  } else {
+    const creators = ['Createur 1', 'Createur 2', 'Createur 3', 'Createur 4', 'Createur 5'];
+    seed = creators.map(name => ({
+      code: 'CREATEUR-' + crypto.randomBytes(3).toString('hex').toUpperCase(),
+      creator: name,
+      used: false,
+      discount: 0.5,
+      createdAt: new Date().toISOString()
+    }));
+  }
+  await writePromoCodes(seed);
+  console.log('🎟️ Codes promo créés :');
+  seed.forEach(c => console.log('   ' + c.code + ' → ' + c.creator));
+}
+
+function readVisits() {
+  try { return JSON.parse(fs.readFileSync(VISITS_FILE, 'utf-8')); }
+  catch { return []; }
+}
+
+function writeVisits(data) {
+  const max = 500;
+  if (data.length > max) data = data.slice(data.length - max);
+  fs.writeFileSync(VISITS_FILE, JSON.stringify(data, null, 2), 'utf-8');
+}
+
+async function handleRequest(req, res) {
   const url = decodeURIComponent(req.url);
   const [pathname, query] = url.split('?');
   const params = new URLSearchParams(query || '');
@@ -156,7 +202,7 @@ http.createServer(async (req, res) => {
   // --- API: Check promo code ---
   if (req.method === 'GET' && pathname === '/api/check-promo') {
     const code = (params.get('code') || '').trim().toUpperCase();
-    const codes = readPromoCodes();
+    const codes = await readPromoCodes();
     const match = codes.find(c => c.code === code);
     if (!match) {
       return jsonResponse(res, 200, { valid: false, message: 'Code invalide' });
@@ -171,14 +217,14 @@ http.createServer(async (req, res) => {
   if (req.method === 'POST' && pathname === '/api/use-promo') {
     const body = await readBody(req);
     const code = (body.code || '').trim().toUpperCase();
-    let codes = readPromoCodes();
+    let codes = await readPromoCodes();
     const match = codes.find(c => c.code === code);
     if (!match || match.used) {
       return jsonResponse(res, 200, { success: false });
     }
     match.used = true;
     match.usedAt = new Date().toISOString();
-    writePromoCodes(codes);
+    await writePromoCodes(codes);
     return jsonResponse(res, 200, { success: true });
   }
 
@@ -187,7 +233,8 @@ http.createServer(async (req, res) => {
     if (params.get('password') !== ADMIN_PASSWORD) {
       return jsonResponse(res, 401, { error: 'Unauthorized' });
     }
-    return jsonResponse(res, 200, readPromoCodes());
+    const codes = await readPromoCodes();
+    return jsonResponse(res, 200, codes);
   }
 
   // --- API: Admin get visits ---
@@ -218,7 +265,7 @@ http.createServer(async (req, res) => {
     if (!creatorName) {
       return jsonResponse(res, 400, { error: 'Creator name is required' });
     }
-    const codes = readPromoCodes();
+    const codes = await readPromoCodes();
     const newCode = {
       code: 'CREATEUR-' + crypto.randomBytes(3).toString('hex').toUpperCase(),
       creator: creatorName,
@@ -227,7 +274,7 @@ http.createServer(async (req, res) => {
       createdAt: new Date().toISOString()
     };
     codes.push(newCode);
-    writePromoCodes(codes);
+    await writePromoCodes(codes);
     return jsonResponse(res, 200, { success: true, code: newCode });
   }
 
@@ -245,9 +292,22 @@ http.createServer(async (req, res) => {
 
   // --- Serve static files ---
   serveFile(res, pathname);
-}).listen(process.env.PORT || 3000, () => {
+}
+
+http.createServer(async (req, res) => {
+  try {
+    await handleRequest(req, res);
+  } catch (e) {
+    console.error('Erreur serveur:', e);
+    if (!res.headersSent) {
+      res.writeHead(500);
+      res.end('Erreur interne');
+    }
+  }
+}).listen(process.env.PORT || 3000, async () => {
   const port = process.env.PORT || 3000;
-  initPromoCodes();
+  await initPromoCodes();
+  if (USE_SUPABASE) console.log('🗄️  Stockage Supabase actif');
   console.log('✅ Serveur démarré sur http://localhost:' + port);
   console.log('🔐 Admin: http://localhost:' + port + '/admin.html');
   console.log('🔄 Appuyez sur Ctrl+C pour arrêter');
