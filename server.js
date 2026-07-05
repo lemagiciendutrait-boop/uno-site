@@ -4,9 +4,11 @@ const path = require('path');
 const crypto = require('crypto');
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'mf1979@';
-const SUGGESTIONS_FILE = path.join(__dirname, 'suggestions.json');
-const PROMO_FILE = path.join(__dirname, 'promo-codes.json');
-const VISITS_FILE = path.join(__dirname, 'visits.json');
+const DATA_DIR = process.env.DATA_DIR || __dirname;
+if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+const SUGGESTIONS_FILE = path.join(DATA_DIR, 'suggestions.json');
+const PROMO_FILE = path.join(DATA_DIR, 'promo-codes.json');
+const VISITS_FILE = path.join(DATA_DIR, 'visits.json');
 
 const mimeTypes = {
   '.html': 'text/html',
@@ -54,6 +56,14 @@ function writePromoCodes(data) {
 
 function initPromoCodes() {
   if (fs.existsSync(PROMO_FILE)) return;
+  const seedFile = path.join(__dirname, 'promo-codes.seed.json');
+  if (fs.existsSync(seedFile)) {
+    const seed = JSON.parse(fs.readFileSync(seedFile, 'utf-8'));
+    writePromoCodes(seed);
+    console.log('🎟️ Codes promo importés depuis le seed :');
+    seed.forEach(c => console.log('   ' + c.code + ' → ' + c.creator));
+    return;
+  }
   const creators = ['Createur 1', 'Createur 2', 'Createur 3', 'Createur 4', 'Createur 5'];
   const codes = creators.map(name => ({
     code: 'CREATEUR-' + crypto.randomBytes(3).toString('hex').toUpperCase(),

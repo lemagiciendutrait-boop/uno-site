@@ -1,0 +1,37 @@
+[
+  {
+    "code": "CREATEUR-2BCC19",
+    "creator": "Createur 1",
+    "used": false,
+    "discount": 0.5,
+    "createdAt": "2026-06-27T07:12:06.905Z"
+  },
+  {
+    "code": "CREATEUR-975A7D",
+    "creator": "Createur 2",
+    "used": false,
+    "discount": 0.5,
+    "createdAt": "2026-06-27T07:12:06.912Z"
+  },
+  {
+    "code": "CREATEUR-8F5B3A",
+    "creator": "Createur 3",
+    "used": false,
+    "discount": 0.5,
+    "createdAt": "2026-06-27T07:12:06.912Z"
+  },
+  {
+    "code": "CREATEUR-5F44ED",
+    "creator": "Createur 4",
+    "used": false,
+    "discount": 0.5,
+    "createdAt": "2026-06-27T07:12:06.912Z"
+  },
+  {
+    "code": "CREATEUR-6C7B97",
+    "creator": "Createur 5",
+    "used": false,
+    "discount": 0.5,
+    "createdAt": "2026-06-27T07:12:06.912Z"
+  }
+]

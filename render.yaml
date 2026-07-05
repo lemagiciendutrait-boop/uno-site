@@ -7,3 +7,9 @@ services:
     envVars:
       - key: ADMIN_PASSWORD
         value: mf1979@
+      - key: DATA_DIR
+        value: /data
+    disk:
+      name: data
+      mountPath: /data
+      sizeGB: 1
