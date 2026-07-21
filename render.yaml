@@ -4,6 +4,3 @@ services:
     env: node
     buildCommand: ""
     startCommand: "node server.js"
-    envVars:
-      - key: ADMIN_PASSWORD
-        value: mf1979@

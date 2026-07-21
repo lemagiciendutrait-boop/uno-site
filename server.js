@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'mf1979@';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '';
 const SUGGESTIONS_FILE = path.join(__dirname, 'suggestions.json');
 const VISITS_FILE = path.join(__dirname, 'visits.json');
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
