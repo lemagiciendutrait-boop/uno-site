@@ -123,6 +123,19 @@ async function writePromoCodes(data) {
 async function initPromoCodes() {
   const codes = await readPromoCodes();
   if (codes.length > 0) {
+    const hasPermanent = codes.some(c => c.permanent);
+    if (!hasPermanent) {
+      codes.push({
+        code: 'CREATEUR-PRIVE',
+        creator: 'Createur Premium',
+        used: false,
+        discount: 0.2,
+        permanent: true,
+        createdAt: new Date().toISOString()
+      });
+      await writePromoCodes(codes);
+      console.log('🎟️ Code permanent CREATEUR-PRIVE ajouté');
+    }
     console.log('🎟️ ' + codes.length + ' codes promo chargés' + (USE_SUPABASE ? ' (Supabase)' : ''));
     return;
   }
