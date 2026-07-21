@@ -109,6 +109,7 @@ async function writePromoCodes(data) {
             used: c.used,
             used_at: c.usedAt || null,
             discount: c.discount,
+            permanent: c.permanent || false,
             created_at: c.createdAt
           })
         });
@@ -207,10 +208,10 @@ async function handleRequest(req, res) {
     if (!match) {
       return jsonResponse(res, 200, { valid: false, message: 'Code invalide' });
     }
-    if (match.used) {
+    if (!match.permanent && match.used) {
       return jsonResponse(res, 200, { valid: false, message: 'Code déjà utilisé' });
     }
-    return jsonResponse(res, 200, { valid: true, discount: match.discount, message: 'Code valide !' });
+    return jsonResponse(res, 200, { valid: true, discount: match.discount, permanent: !!match.permanent, message: match.permanent ? 'Code permanent actif !' : 'Code valide !' });
   }
 
   // --- API: Use promo code (marquer comme utilisé) ---
@@ -221,6 +222,9 @@ async function handleRequest(req, res) {
     const match = codes.find(c => c.code === code);
     if (!match || match.used) {
       return jsonResponse(res, 200, { success: false });
+    }
+    if (match.permanent) {
+      return jsonResponse(res, 200, { success: true });
     }
     match.used = true;
     match.usedAt = new Date().toISOString();
@@ -265,12 +269,14 @@ async function handleRequest(req, res) {
     if (!creatorName) {
       return jsonResponse(res, 400, { error: 'Creator name is required' });
     }
+    const isPermanent = !!body.permanent;
     const codes = await readPromoCodes();
     const newCode = {
       code: 'CREATEUR-' + crypto.randomBytes(3).toString('hex').toUpperCase(),
       creator: creatorName,
       used: false,
-      discount: 0.5,
+      discount: isPermanent ? 0.2 : 0.5,
+      permanent: isPermanent || undefined,
       createdAt: new Date().toISOString()
     };
     codes.push(newCode);

@@ -358,8 +358,12 @@ async function applyPromoCode() {
 
     if (data.valid) {
       const pct = Math.round(data.discount * 100);
-      appliedPromo = { code, discount: data.discount };
-      msg.textContent = '✅ Code promo appliqué : -' + pct + '% sur tous les decks !';
+      appliedPromo = { code, discount: data.discount, permanent: data.permanent };
+      if (data.permanent) {
+        msg.textContent = '✅ Code permanent actif : 8 000 FCFA par deck !';
+      } else {
+        msg.textContent = '✅ Code promo appliqué : -' + pct + '% sur tous les decks !';
+      }
       msg.className = 'promo-success';
       btn.classList.add('success');
       loadCheckout();

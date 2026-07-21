@@ -1,5 +1,13 @@
 [
   {
+    "code": "CREATEUR-PRIVE",
+    "creator": "Createur Premium",
+    "used": false,
+    "discount": 0.2,
+    "permanent": true,
+    "createdAt": "2026-07-21T00:00:00.000Z"
+  },
+  {
     "code": "CREATEUR-2BCC19",
     "creator": "Createur 1",
     "used": false,
